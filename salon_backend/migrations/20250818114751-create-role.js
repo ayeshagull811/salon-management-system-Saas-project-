@@ -1,46 +1,29 @@
-
 'use strict';
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('UserSalons', {
+    await queryInterface.createTable("Roles", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      userId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "Users",
-          key: "id"
-        },
-        onDelete: "CASCADE",
-        onUpdate: "CASCADE"
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,   // ✅ null nahi hoga
+        // ❌ yahan unique hatao
       },
       salonId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "Salons",
-          key: "id"
+          key: "id",
         },
+        onUpdate: "CASCADE",
         onDelete: "CASCADE",
-        onUpdate: "CASCADE"
       },
-roleId: {  
-  type: Sequelize.INTEGER,
-  allowNull: true,
-  references: {
-    model: "Roles",
-    key: "id"
-  },
-  onDelete: "SET NULL",   // keep UserSalon row but nullify role
-  onUpdate: "CASCADE"
-},
-
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
@@ -50,8 +33,16 @@ roleId: {
         type: Sequelize.DATE
       }
     });
+
+    // 👇 Composite unique constraint add karo
+    await queryInterface.addConstraint("Roles", {
+      fields: ["name", "salonId"],
+      type: "unique",
+      name: "unique_role_per_salon"
+    });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('UserSalons');
+    await queryInterface.dropTable('Roles');
   }
 };

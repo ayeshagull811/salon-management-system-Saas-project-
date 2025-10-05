@@ -2,44 +2,53 @@ const { Role, Permission } = require("../models");
 
 module.exports = {
   // Create role
-  async createRole(req, res) {
-    try {
-      const { name, permissionIds } = req.body;
+// Create role
+async createRole(req, res) {
+  try {
+    console.log("📥 Incoming body:", req.body);
 
-      // ✅ Check if role already exists
-      const existingRole = await Role.findOne({ where: { name } });
-      if (existingRole) {
-        return res.status(400).json({ message: "Role already exists" });
-      }
+    const { name, salonId, permissionIds } = req.body;
 
-      // Create new role
-      const role = await Role.create({ name });
+    // Debug values
+    console.log("Role Name:", name);
+    console.log("Salon ID:", salonId);
+    console.log("Permission IDs:", permissionIds);
 
-      // Assign permissions if provided
-      if (permissionIds && permissionIds.length > 0) {
-        await role.setPermissions(permissionIds);
-      }
+    const role = await Role.create({ name, salonId });
 
-      res.status(201).json({ message: "Role created successfully", role });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: error.message });
+    if (permissionIds && permissionIds.length > 0) {
+      await role.setPermissions(permissionIds);
     }
-  },
+
+    return res.status(201).json({ message: "Role created", role });
+  } catch (err) {
+    console.error("❌ Backend createRole error:", err);
+    return res.status(500).json({ error: err.message });
+  }
+},
+
+
 
   // Get all roles
-  async getRoles(req, res) {
-    try {
-      const roles = await Role.findAll({
-        include: [{ model: Permission, as: "Permissions" }],
-      });
-      res.json(roles);
-    } catch (error) {
-      console.error("Error in getRoles:", error);
-      res.status(500).json({ error: error.message });
+async getRoles(req, res) {
+  try {
+    const { salonId } = req.query;
+    if (!salonId) {
+      return res.status(400).json({ message: "SalonId is required" });
     }
-  },
 
+   const roles = await Role.findAll({
+  where: { salonId },   // ✅ case match karo
+  include: [{ model: Permission, as: "Permissions" }],
+});
+
+    res.json(roles);
+  } catch (error) {
+    console.error("Error in getRoles:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+,
   // Get single role
   async getRole(req, res) {
     try {
@@ -98,4 +107,4 @@ module.exports = {
       res.status(500).json({ error: error.message });
     }
   },
-};
+}; 

@@ -14,6 +14,9 @@ const categoryRouter = require('./routes/categoryRoute');
 const scheduleRouter = require('./routes/scheduleRoute');
 const roleroute = require('./routes/roleRoute');
 const PermissionRouter = require('./routes/permissionRoutes');
+const appointmentRouter = require('./routes/appointmentRoute');
+const inventory = require('./models/inventory');
+const inventoryRouter = require('./routes/inventoryRoute');
 const { sequelize } = db;
 
 
@@ -22,7 +25,10 @@ const { sequelize } = db;
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // your frontend
+  credentials: true,
+}));
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // serve images
@@ -37,6 +43,8 @@ app.use('/category',categoryRouter)
 app.use('/schedule',scheduleRouter)
 app.use('/role',roleroute)
 app.use('/permission',PermissionRouter)
+app.use('/appointment',appointmentRouter)
+app.use('/inventory',inventoryRouter)
 
 // Server
 const PORT = process.env.PORT || 8000;

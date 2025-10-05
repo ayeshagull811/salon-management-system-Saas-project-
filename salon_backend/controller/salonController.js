@@ -59,39 +59,36 @@ const getAllSalons = async (req, res) => {
 // };
 
 const createSalon = async (req, res) => {
-  const t = await db.sequelize.transaction();
   try {
-    const userId = req.user.id;
-
-    // Fetch Owner role (must exist in Roles table)
-    const ownerRole = await db.Role.findOne({ where: { name: "Owner" } });
-    if (!ownerRole) {
-      throw new Error("Owner role not found in Roles table");
+    // Token se aaya user check karo
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Unauthorized: User not found in token" });
     }
 
-    // Create Salon
+    const userId = req.user.id;
+    console.log("Decoded User from Token:", req.user);
+
+    // Role fetch karo (case-sensitive fix ✅)
+    const ownerRole = await db.Role.findOne({ where: { name: "owner" } });
+    if (!ownerRole) {
+      return res.status(404).json({ message: "Owner role not found in Roles table" });
+    }
+
+    // Salon create karo
     const { salon_name, salon_email, contact_number, type } = req.body;
-    const newSalon = await db.Salon.create(
-      {
-        salon_name,
-        salon_email,
-        contact_number,
-        type,
-      },
-      { transaction: t }
-    );
+    const newSalon = await db.Salon.create({
+      salon_name,
+      salon_email,
+      contact_number,
+      type,
+    });
 
-    // Assign user as Owner in junction table
-    await db.UserSalons.create(
-      {
-        userId,
-        salonId: newSalon.id,
-        roleId: ownerRole.id,
-      },
-      { transaction: t }
-    );
-
-    await t.commit();
+    // User ko salon ka owner bana do
+    await db.UserSalons.create({
+      userId,
+      salonId: newSalon.id,
+      roleId: ownerRole.id,
+    });
 
     res.status(201).json({
       message: "Salon created successfully",
@@ -99,7 +96,6 @@ const createSalon = async (req, res) => {
       data: newSalon,
     });
   } catch (error) {
-    await t.rollback();
     console.error("Create Salon Error:", error);
     res.status(500).json({
       message: "Server error",

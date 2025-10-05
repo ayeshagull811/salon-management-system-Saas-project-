@@ -1,42 +1,55 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Role extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {    
+    static associate(models) {
       Role.belongsToMany(models.User, {
         through: models.UserSalons,
         foreignKey: "roleId",
         otherKey: "userId",
         as: "Users",
       });
-Role.belongsToMany(models.Salon, {
-  through: models.UserSalons,
-  foreignKey: "roleId",
-  otherKey: "salonId",
-  as: "Salons",
-});
 
-   Role.belongsToMany(models.Permission, {
-  through: models.RolePermissions,
-  foreignKey: "roleId",
-  otherKey: "permissionId",
-  as: "Permissions",   // ✅ Correct alias
-});
+      Role.belongsToMany(models.Salon, {
+        through: models.UserSalons,
+        foreignKey: "roleId",
+        otherKey: "salonId",
+        as: "Salons",
+      });
 
+      Role.belongsToMany(models.Permission, {
+        through: models.RolePermissions,
+        foreignKey: "roleId",
+        otherKey: "permissionId",
+        as: "Permissions",
+      });
+
+      Role.belongsTo(models.Salon, { foreignKey: "salonId", as: "Salon" });
     }
   }
+
   Role.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      // ❌ unique: true hatao
+    },
+    salonId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
   }, {
     sequelize,
     modelName: 'Role',
+    tableName: 'Roles',
+    indexes: [
+      {
+        unique: true,
+        fields: ['name', 'salonId'],  // ✅ per salon unique
+      }
+    ]
   });
+
   return Role;
 };

@@ -36,7 +36,7 @@ routes.get(
 routes.post(
   "/create",
   authProtect,
-  checkPermission("create_salon"),
+
   createSalon
 );
 

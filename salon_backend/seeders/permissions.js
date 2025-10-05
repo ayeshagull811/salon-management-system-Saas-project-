@@ -1,9 +1,10 @@
+// seeders/XXXX-create-permissions.js
 "use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert("Permissions", [
-      { name: "create_salon", createdAt: new Date(), updatedAt: new Date() },
+     { name: "create_salon", createdAt: new Date(), updatedAt: new Date() },
       { name: "update_salon", createdAt: new Date(), updatedAt: new Date() },
       { name: "delete_salon", createdAt: new Date(), updatedAt: new Date() },
       { name: "view_salon", createdAt: new Date(), updatedAt: new Date() },

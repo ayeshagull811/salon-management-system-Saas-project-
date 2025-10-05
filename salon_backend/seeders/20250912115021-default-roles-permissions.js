@@ -1,43 +1,30 @@
-'use strict';
+"use strict";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    const now = new Date();
+    // Get a salon id (assuming first salon exists)
+    const [salons] = await queryInterface.sequelize.query(
+      `SELECT id FROM Salons LIMIT 1;`
+    );
+    if (!salons.length) {
+      throw new Error("No Salon found! Please seed Salon first.");
+    }
 
-    // Ensure 'owner' role exists
     await queryInterface.bulkInsert(
-      'Roles',
-      [{ name: 'owner', createdAt: now, updatedAt: now }],
+      "Roles",
+      [
+        {
+          name: "owner",
+          salonId: salons[0].id, // 👈 attach salon
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      ],
       { ignoreDuplicates: true }
     );
-
-    // Get owner role ID after insert
-    const [ownerRole] = await queryInterface.sequelize.query(
-      `SELECT id FROM Roles WHERE name = 'owner' LIMIT 1;`
-    );
-    const ownerRoleId = ownerRole[0].id; // ✅ this must exist
-
-    // Get all permission IDs
-    const [allPerms] = await queryInterface.sequelize.query(
-      `SELECT id FROM Permissions;`
-    );
-
-    const rolePermData = allPerms.map((perm) => ({
-      roleId: ownerRoleId, // ✅ must not be null
-      permissionId: perm.id,
-      createdAt: now,
-      updatedAt: now,
-    }));
-
-    if (rolePermData.length > 0) {
-      await queryInterface.bulkInsert('RolePermissions', rolePermData, {
-        ignoreDuplicates: true,
-      });
-    }
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('RolePermissions', null, {});
-    await queryInterface.bulkDelete('Roles', { name: 'owner' }, {});
+    await queryInterface.bulkDelete("Roles", { name: "owner" }, {});
   },
 };
