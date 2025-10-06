@@ -84,11 +84,13 @@ const app = express();
 // ============================
 // 🔧 Middleware Setup
 // ============================
+import cors from 'cors';
 app.use(cors({
-  origin: "*",
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  credentials: true
+    origin: ["http://localhost:3000", "https://saas-project-salon-management-syste-seven.vercel.app/"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
 }));
+
 
 app.use(cookieParser());
 app.use(bodyParser.json());
