@@ -85,9 +85,11 @@ const app = express();
 // 🔧 Middleware Setup
 // ============================
 app.use(cors({
-  origin: "http://localhost:3000", // your frontend
-  credentials: true,
+  origin: "*",
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  credentials: true
 }));
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
