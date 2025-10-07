@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+
+:root {
+  /* --background: #ffffff;
+  --foreground: #171717; */
+}
+.swiper-pagination-bullet {
+  background-color: #ec4899 !important; /* Tailwind pink-500 */
+}
+
+
+@theme inline {
+  /* --color-background: var(--background); */
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* --background: #0a0a0a;
+    --foreground: #ededed; */
+  }
+}
+
+body {
+  /* background: var(--background); */
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* Dots ka color (pagination bullets) */
+.swiper-pagination-bullet {
+  background-color: #f59e0b !important; /* amber-500 */
+  opacity: 1 !important;
+}
+.swiper-pagination-bullet-active {
+  background-color: #f59e0b !important; /* amber-500 */
+}
+
+/* Arrows ka color (navigation buttons) */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #f59e0b !important; /* amber-500 */
+  font-weight: bold;
+
+}
+.swiper {
+  padding-bottom: 60px !important; /* Jitna gap chahiye utna */
+}
+
+.swiper-pagination {
+  position: relative !important; /* ab margin work karega */
+  margin-top: 20px !important;   /* dots aur box ke darmiyan gap */
+}
+/* Optional: hover effect */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #d97706 !important; /* amber-600 darker hover */
+}
+
+/* Agar swiper ka background hatana ho */
+.swiper {
+  background: transparent !important;
+}
+
+body {
+  font-family: 'Poppins', sans-serif; /* ya koi bhi font */
+}
+.space-grotesk {
+  font-family: var(--font-space-grotesk), sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+/* .font-beautium {
+  font-family: var(--font-beautium), cursive;
+} */
